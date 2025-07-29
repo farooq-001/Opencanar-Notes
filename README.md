@@ -1,3 +1,6 @@
+tail -f -n  1  /var/tmp/opencanary.log  | jq .
+
+
 # Opencanar-Notes 
 # URL: https://github.com/thinkst/opencanary
 
