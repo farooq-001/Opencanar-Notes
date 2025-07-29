@@ -19,6 +19,7 @@ source env/bin/activate
 echo "🐍 Installing OpenCanary..."
 pip install opencanary
 pip install scapy pcapy-ng  # for SNMP module (optional)
+sudo snap install jq -y
  
 echo "📝 Creating default configuration file..."
 opencanaryd --copyconfig
