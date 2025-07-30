@@ -1,5 +1,6 @@
 tail -f -n  1  /var/tmp/opencanary.log  | jq .
 
+ls -lrht    /root/env/lib/python3.12/site-packages/opencanary/modules
 
 # Opencanar-Notes 
 # URL: https://github.com/thinkst/opencanary
