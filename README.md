@@ -1,22 +1,4 @@
-tail -f -n  1  /var/tmp/opencanary.log  | jq .
+# Docker Honeypod
 
-ls -lrht    /root/env/lib/python3.12/site-packages/opencanary/modules
-
-# Opencanar-Notes 
-# URL: https://github.com/thinkst/opencanary
-
-Commands:
-git:  
-git clone git://127.0.0.1:9418/test-repo
-
-ftp:
-ftp 127.0.0.1:21
-
-http:
-curl http://127.0.0.1:80
-
-https:
-curl https://127.0.0.1:443
-
-mysql:
-mysql -h <OpenCanary_IP> -P 3306 -u root -p
+curl -s https://raw.githubusercontent.com/farooq-001/Opencanar-Notes/master/docker/opencanary/opencanary-start.sh | bash -s -- -s ssh -p 2244
+curl -s https://raw.githubusercontent.com/farooq-001/Opencanar-Notes/master/docker/opencanary/opencanary-stop.sh | bash -s -- -s ssh
