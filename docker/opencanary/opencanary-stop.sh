@@ -1,22 +1,24 @@
 #!/bin/bash
-# 🐝 Honeypod Stopper Script
-# Gracefully stops one or all OpenCanary honeypod containers
+# 🐝 Honeypod Stopper Script — Advanced Edition
+# Stops honeypod containers, removes their compose files, and cleans up logs
 
 COMPOSE_BASE="/opt/docker/opencanary/docker-compose"
+LOG_BASE="/var/log/honeypod"
 
 show_banner() {
+  clear
   echo ""
-  echo "╔═══════════════════════════════════════════════╗"
-  echo "║        🐝  HONEYPOD SERVICE STOPPER           ║"
-  echo "╚═══════════════════════════════════════════════╝"
+  echo "╔══════════════════════════════════════════════════════════╗"
+  echo "║           🐝  HONEYPOD SERVICE STOPPER & CLEANER          ║"
+  echo "╚══════════════════════════════════════════════════════════╝"
   echo ""
 }
 
 show_help() {
   show_banner
   echo "Usage:"
-  echo "  $0 -s <service>   # Stop a specific honeypod service"
-  echo "  $0 --all          # Stop all running honeypod services"
+  echo "  $0 -s <service>   # Stop and clean a specific honeypod service"
+  echo "  $0 --all          # Stop and clean all honeypod services"
   echo ""
   echo "Examples:"
   echo "  $0 -s ssh"
@@ -24,35 +26,52 @@ show_help() {
   echo ""
 }
 
-stop_service() {
+stop_and_clean_service() {
   local SERVICE="$1"
   local COMPOSE_FILE="$COMPOSE_BASE/${SERVICE}-compose.yml"
+  local LOG_DIR="$LOG_BASE/$SERVICE"
 
-  if [[ ! -f "$COMPOSE_FILE" ]]; then
-    echo "❌ Compose file not found for service: $SERVICE"
-    return
+  echo "─────────────────────────────────────────────"
+  echo "🛑 Stopping honeypod service: $SERVICE"
+
+  if [[ -f "$COMPOSE_FILE" ]]; then
+    docker compose -f "$COMPOSE_FILE" down --remove-orphans 2>/dev/null
+    echo "✅ Docker containers for $SERVICE stopped."
+  else
+    echo "⚠️  No compose file found for $SERVICE."
   fi
 
-  echo "🛑 Stopping honeypod service: $SERVICE ..."
-  docker compose -f "$COMPOSE_FILE" down --remove-orphans
-  echo "✅ Service $SERVICE stopped."
+  # Remove logs
+  if [[ -d "$LOG_DIR" ]]; then
+    rm -rf "$LOG_DIR"
+    echo "🧹 Logs cleaned: $LOG_DIR"
+  else
+    echo "⚠️  No logs found for $SERVICE."
+  fi
+
+  # Optionally remove compose file
+  if [[ -f "$COMPOSE_FILE" ]]; then
+    rm -f "$COMPOSE_FILE"
+    echo "🗑️  Compose file removed: $COMPOSE_FILE"
+  fi
 }
 
-stop_all() {
-  echo "🛑 Stopping all honeypod services..."
-  for file in "$COMPOSE_BASE"/*-compose.yml; do
-    [[ -f "$file" ]] || continue
-    service=$(basename "$file" -compose.yml)
-    stop_service "$service"
+stop_and_clean_all() {
+  echo "🛑 Stopping and cleaning ALL honeypod services..."
+  for FILE in "$COMPOSE_BASE"/*-compose.yml; do
+    [[ -f "$FILE" ]] || continue
+    SERVICE=$(basename "$FILE" -compose.yml)
+    stop_and_clean_service "$SERVICE"
   done
-  echo "✅ All honeypod containers stopped."
+  echo ""
+  echo "✅ All honeypod services stopped and cleaned."
 }
 
 # --- Main logic ---
 show_banner
 
 if [[ "$1" == "--all" ]]; then
-  stop_all
+  stop_and_clean_all
   exit 0
 fi
 
@@ -69,4 +88,4 @@ if [[ -z "$SERVICE" ]]; then
   exit 1
 fi
 
-stop_service "$SERVICE"
+stop_and_clean_service "$SERVICE"
