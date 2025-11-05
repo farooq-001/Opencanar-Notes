@@ -36,10 +36,11 @@ stop_and_clean_service() {
   echo "─────────────────────────────────────────────"
   echo "🛑 Stopping honeypod service: $SERVICE"
 
-  # Stop container
+  # Stop only the specific service container
   if [[ -f "$COMPOSE_FILE" ]]; then
-    docker compose -f "$COMPOSE_FILE" down --remove-orphans 2>/dev/null
-    echo "✅ Docker containers for $SERVICE stopped."
+    docker compose -f "$COMPOSE_FILE" stop "$SERVICE" 2>/dev/null
+    docker compose -f "$COMPOSE_FILE" rm -f "$SERVICE" 2>/dev/null
+    echo "✅ Docker container for $SERVICE stopped and removed."
   else
     echo "⚠️  No compose file found for $SERVICE."
   fi
