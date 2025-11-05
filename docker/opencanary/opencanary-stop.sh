@@ -1,9 +1,10 @@
 #!/bin/bash
 # 🐝 Honeypod Stopper Script — Advanced Edition
-# Stops honeypod containers, removes their compose files, and cleans up logs
+# Stops honeypod containers, removes their compose files, logs, and config
 
 COMPOSE_BASE="/opt/docker/opencanary/docker-compose"
 LOG_BASE="/var/log/honeypod"
+CONFIG_BASE="/opt/docker/opencanary/config"
 
 show_banner() {
   clear
@@ -30,10 +31,12 @@ stop_and_clean_service() {
   local SERVICE="$1"
   local COMPOSE_FILE="$COMPOSE_BASE/${SERVICE}-compose.yml"
   local LOG_DIR="$LOG_BASE/$SERVICE"
+  local CONFIG_FILE="$CONFIG_BASE/${SERVICE}.conf"
 
   echo "─────────────────────────────────────────────"
   echo "🛑 Stopping honeypod service: $SERVICE"
 
+  # Stop container
   if [[ -f "$COMPOSE_FILE" ]]; then
     docker compose -f "$COMPOSE_FILE" down --remove-orphans 2>/dev/null
     echo "✅ Docker containers for $SERVICE stopped."
@@ -49,10 +52,18 @@ stop_and_clean_service() {
     echo "⚠️  No logs found for $SERVICE."
   fi
 
-  # Optionally remove compose file
+  # Remove compose file
   if [[ -f "$COMPOSE_FILE" ]]; then
     rm -f "$COMPOSE_FILE"
     echo "🗑️  Compose file removed: $COMPOSE_FILE"
+  fi
+
+  # Remove config file
+  if [[ -f "$CONFIG_FILE" ]]; then
+    rm -f "$CONFIG_FILE"
+    echo "🗑️  Config file removed: $CONFIG_FILE"
+  else
+    echo "⚠️  No config found for $SERVICE."
   fi
 }
 
@@ -70,7 +81,7 @@ stop_and_clean_all() {
 # --- Main logic ---
 show_banner
 
-if [[ "$1" == "--all" ]]; then
+if [[ "${1:-}" == "--all" ]]; then
   stop_and_clean_all
   exit 0
 fi
@@ -83,7 +94,7 @@ while getopts ":s:h" opt; do
   esac
 done
 
-if [[ -z "$SERVICE" ]]; then
+if [[ -z "${SERVICE:-}" ]]; then
   show_help
   exit 1
 fi
