@@ -1,6 +1,6 @@
 #!/bin/bash
 # 🐝 Honeypod Stopper Script — Advanced Edition
-# Stops honeypod containers, removes their compose files, logs, and config
+# Stops honeypod containers, removes their compose files, logs, and the specific config
 
 COMPOSE_BASE="/opt/docker/opencanary/docker-compose"
 LOG_BASE="/var/log/honeypod"
@@ -58,12 +58,12 @@ stop_and_clean_service() {
     echo "🗑️  Compose file removed: $COMPOSE_FILE"
   fi
 
-  # Remove config file
+  # Remove only the specific service config
   if [[ -f "$CONFIG_FILE" ]]; then
     rm -f "$CONFIG_FILE"
     echo "🗑️  Config file removed: $CONFIG_FILE"
   else
-    echo "⚠️  No config found for $SERVICE."
+    echo "⚠️  No config found for $SERVICE (skipping)."
   fi
 }
 
