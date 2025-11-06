@@ -6,7 +6,6 @@ curl -s https://raw.githubusercontent.com/farooq-001/Opencanar-Notes/master/dock
 
 curl -Ssl https://raw.githubusercontent.com/farooq-001/Opencanar-Notes/master/docker/opencanary/logsender/seup.sh | bash
 
-
 curl -s https://raw.githubusercontent.com/farooq-001/Opencanar-Notes/master/docker/opencanary/opencanary-stop.sh | bash -s -- -s ssh
 
 
