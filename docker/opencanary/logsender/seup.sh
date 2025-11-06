@@ -32,10 +32,8 @@ services:
         max-file: "3"
 EOF
 
-# Go to directory
-cd "$COMPOSE_PATH"
 
 # Run docker compose
-docker compose -f "$COMPOSE_FILE" up -d --build
+docker compose -f "/opt/docker/opencanary/docker-compose/logsender-compose.yml" up -d --build
 
 echo "[SUCCESS] honeypod-logsender container deployed successfully."
