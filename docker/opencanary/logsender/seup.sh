@@ -1,8 +1,10 @@
 #!/bin/bash
 # ============================================================
-# Simple Script to Create and Start honeypod-logsender Docker Compose
+# Fixed Script to Deploy honeypod-logsender Docker Compose
 # Path: /opt/docker/opencanary/docker-compose/logsender-compose.yml
 # ============================================================
+
+set -e  # Exit on error
 
 # Define file path
 COMPOSE_PATH="/opt/docker/opencanary/docker-compose"
@@ -14,13 +16,10 @@ mkdir -p /var/log/honeypod
 
 # Create docker-compose file
 cat > "$COMPOSE_FILE" <<'EOF'
-version: "3.9"
-
 services:
   honeypod-logsender:
-    build: .
-    container_name: honeypod-logsender
     image: baba001/honeypod-logsender:latest
+    container_name: honeypod-logsender
     restart: unless-stopped
     network_mode: host
     volumes:
@@ -32,8 +31,8 @@ services:
         max-file: "3"
 EOF
 
-
-# Run docker compose
-docker compose -f "/opt/docker/opencanary/docker-compose/logsender-compose.yml" up -d --build
+# Deploy container
+echo "[INFO] Starting honeypod-logsender..."
+docker compose -f "$COMPOSE_FILE" up -d
 
 echo "[SUCCESS] honeypod-logsender container deployed successfully."
